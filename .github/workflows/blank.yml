@@ -13,14 +13,6 @@ jobs:
     steps:
     - name: Checkout release
       uses: actions/checkout@v4
-       
-    - name: Setup Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.21'
-    
-    - name: Build
-      run: go build -o main
 
     - name: AWS configure credentials
       uses: aws-actions/configure-aws-credentials@v1
