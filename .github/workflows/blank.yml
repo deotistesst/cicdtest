@@ -13,7 +13,8 @@ jobs:
     steps:
     - name: Checkout release
       uses: actions/checkout@v4
-
+    
+    - name: output test
       run: |
       echo ${{ secrets.AWS_ACCESS_KEY_ID }}
       echo ${{ secrets.AWS_SECRET_ACCESS_KEY }}
