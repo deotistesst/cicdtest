@@ -1,0 +1,68 @@
+name: Deploy to Amazon EC2
+
+on:
+  push:
+    branches:
+    - cicdtest
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout release
+      uses: actions/checkout@v4
+    
+    # 1. 변경된 폴더 감지
+    - name: Check for changes
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          home_changed:
+            - './home/**'
+          mobile_changed:
+            - './mobile/**'
+
+    # 2. Home 프로젝트 (Java 8) - home 폴더 변경 시에만 실행
+    - name: Build Home with Java 8
+      if: steps.filter.outputs.home_changed == 'true'
+      run: |
+        echo "Home directory changed. Building..."
+        # ./gradlew :home:build (실제 빌드 명령어)
+        touch home/update_flag
+
+    # 3. Mobile 프로젝트 (Java 17) - mobile 폴더 변경 시에만 실행
+    - name: Build Mobile with Java 17
+      if: steps.filter.outputs.mobile_changed == 'true'
+      run: |
+        echo "Mobile directory changed. Building..."
+        # ./gradlew :mobile:build (실제 빌드 명령어)
+        touch mobile/update_flag        
+    
+    - name: AWS configure credentials
+      uses: aws-actions/configure-aws-credentials@v4 
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    
+    - name: Grant execute permitssion for scripts
+      run: chmod +x scripts/*.sh    
+        
+    - name: Upload to AWS S3
+      run: |
+        aws deploy push \
+          --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
+          --s3-location s3://${{ secrets.AWS_S3_BUCKET_NAME }}/$GITHUB_SHA.zip \
+          --ignore-hidden-files \
+          --source .
+      
+    - name: Deploy to AWS EC2 from S3
+      run: |
+        aws deploy create-deployment \
+          --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
+          --deployment-config-name CodeDeployDefault.OneAtATime \
+          --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }}\
+          --s3-location bucket=${{ secrets.AWS_S3_BUCKET_NAME }},key=$GITHUB_SHA.zip,bundleType=zip
