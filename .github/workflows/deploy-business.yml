@@ -21,12 +21,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Build with Gradle
-      run: |
-         cd business
-         chmod +x gradlew
-         ./gradlew build
-
     - name: AWS configure credentials
       uses: aws-actions/configure-aws-credentials@v4 
       with:
