@@ -37,7 +37,7 @@ jobs:
           --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
           --s3-location s3://${{ secrets.AWS_S3_BUCKET_NAME }}/BUSINESS-$GITHUB_SHA.zip \
           --ignore-hidden-files \
-          --source .
+          --source business
       
     - name: Deploy to AWS EC2 from S3
       run: |
