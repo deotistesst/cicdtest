@@ -1,10 +1,10 @@
-name: Deploy Project varsHome
+name: Deploy Project mobile
 on:
   push:
     branches:
     - vars_test
     paths:
-      - 'varshome/**'
+      - 'mobile/**'
   workflow_dispatch:
 
 jobs:
@@ -29,15 +29,15 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
     
     - name: Grant execute permitssion for scripts
-      run: chmod +x varshome/scripts/*.sh    
+      run: chmod +x mobile/scripts/*.sh    
         
     - name: Upload to AWS S3
       run: |
         aws deploy push \
           --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
-          --s3-location s3://${{ secrets.AWS_S3_BUCKET_NAME }}/varsHOME-$GITHUB_SHA.zip \
+          --s3-location s3://${{ secrets.AWS_S3_BUCKET_NAME }}/mobile-$GITHUB_SHA.zip \
           --ignore-hidden-files \
-          --source varshome
+          --source mobile
       
     - name: Deploy to AWS EC2 from S3
       run: |
@@ -45,4 +45,4 @@ jobs:
           --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
           --deployment-config-name CodeDeployDefault.OneAtATime \
           --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_HOME }}\
-          --s3-location bucket=${{ secrets.AWS_S3_BUCKET_NAME }},key=varsHOME-$GITHUB_SHA.zip,bundleType=zip
+          --s3-location bucket=${{ secrets.AWS_S3_BUCKET_NAME }},key=mobile-$GITHUB_SHA.zip,bundleType=zip
