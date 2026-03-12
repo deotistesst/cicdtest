@@ -3,6 +3,8 @@ os: linux
 files:
   - source: /
     destination: /home/ec2-user/business
+  - source: scripts/
+    destination: /home/ec2-user/business/scripts
 hooks:
   ApplicationStop:
     - location: scripts/stop.sh
