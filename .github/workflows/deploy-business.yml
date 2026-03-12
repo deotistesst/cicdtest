@@ -16,8 +16,8 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
+      uses: actions/setup-java@v4
+      with:
           java-version: '17'
           distribution: 'temurin'
 
@@ -41,7 +41,7 @@ jobs:
       run: |
         aws deploy push \
           --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
-          --s3-location s3://${{ secrets.AWS_S3_BUCKET_NAME }}/HOME-$GITHUB_SHA.zip \
+          --s3-location s3://${{ secrets.AWS_S3_BUCKET_NAME }}/BUSINESS-$GITHUB_SHA.zip \
           --ignore-hidden-files \
           --source .
       
@@ -51,4 +51,4 @@ jobs:
           --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
           --deployment-config-name CodeDeployDefault.OneAtATime \
           --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_BUSINESS }}\
-          --s3-location bucket=${{ secrets.AWS_S3_BUCKET_NAME }},key=HOME-$GITHUB_SHA.zip,bundleType=zip
+          --s3-location bucket=${{ secrets.AWS_S3_BUCKET_NAME }},key=BUSINESS-$GITHUB_SHA.zip,bundleType=zip
