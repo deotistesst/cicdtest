@@ -47,4 +47,3 @@ jobs:
           --deployment-config-name CodeDeployDefault.OneAtATime \
           --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_BUSINESS }}\
           --s3-location bucket=${{ secrets.AWS_S3_BUCKET_NAME }},key=BUSINESS-$GITHUB_SHA.zip,bundleType=zip
-          --ignore-application-stop-failures
