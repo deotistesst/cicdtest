@@ -14,6 +14,33 @@ jobs:
     - name: Checkout release
       uses: actions/checkout@v4
     
+    # 1. 변경된 폴더 감지
+    - name: Check for changes
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          home_changed:
+            - './home/**'
+          mobile_changed:
+            - './mobile/**'
+
+    # 2. Home 프로젝트 (Java 8) - home 폴더 변경 시에만 실행
+    - name: Build Home with Java 8
+      if: steps.filter.outputs.home_changed == 'true'
+      run: |
+        echo "Home directory changed. Building..."
+        # ./gradlew :home:build (실제 빌드 명령어)
+        touch home/update_flag
+
+    # 3. Mobile 프로젝트 (Java 17) - mobile 폴더 변경 시에만 실행
+    - name: Build Mobile with Java 17
+      if: steps.filter.outputs.mobile_changed == 'true'
+      run: |
+        echo "Mobile directory changed. Building..."
+        # ./gradlew :mobile:build (실제 빌드 명령어)
+        touch mobile/update_flag        
+    
     - name: AWS configure credentials
       uses: aws-actions/configure-aws-credentials@v4 
       with:
